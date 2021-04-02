@@ -1,0 +1,31 @@
+As a freelancer I have implemented development projects, design and administration of web pages and services, deployment of cloud projects, data and database administration and maintenance of computer equipment.
+DESKTOP-2ID8ELN
+
+1 Configurar la cadena de conexion
+initial catalog = BaseDatos; user id = Usuario; password = Contraseña"
+
+2 Crear el dbContext y su constructor apuntando a la cadena de conexion que herede de la clase DbContext
+
+3 Crear modelo para departamentos, datannotatios para llave primaria y su respectivo controlador
+
+4 modificar vista para visualizar el crud del modelo
+
+5 agregar datanotatiospara validaciones y migracion automatica de base de datos
+	Enable-Migrations -ContextTypeName EcomerceContext -EnableAutomaticMigrations -Force
+
+6 cambiar la propiedad AutomaticMigrationDataLossAllowed = true; en el archivo de Configuración de migraciones
+
+7 Agregar en el Global asaxs la siguiente linea Database.SetInitializer(new MigrateDatabaseToLatestVersion<Models.EcomerceContext, Migrations.Configuration>());
+
+8 Se modifica la vista de departamentos agregando la clase , new { id=item.DepartmentId }, new { @class = "btn btn-warning" }
+
+9 Se crea modelo ciudades con su respectivo controlador, se agrega relación entre diudades y departamentos agregando la propiedad Department ID y la propiedad virtual Department
+
+10 Se modifica el modelo Department agregando el ICollection para City
+
+11 Se agrega Datannotations Display al modelo ciudad y departamentos para mostrar la cabecera y se ajusta la vista ciudad para decorar los botones new { }, new { @class = "btn btn-primary" }
+
+12 Se agrega consulta linq para ordenar los departamentos alfabeticamente db.Deparments.OrderBy(b => b.Name),
+
+12
+
