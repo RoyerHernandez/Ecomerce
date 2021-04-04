@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Ecomerce.Clases;
 using Ecomerce.Models;
 
 namespace Ecomerce.Controllers
@@ -39,7 +40,7 @@ namespace Ecomerce.Controllers
         // GET: Cities/Create
         public ActionResult Create()
         {
-            ViewBag.DepartmentId = new SelectList(db.Deparments.OrderBy(b => b.Name), 
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), 
                                 "DepartmentId", "Name");
             return View();
         }
@@ -58,7 +59,7 @@ namespace Ecomerce.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DepartmentId = new SelectList(db.Deparments.OrderBy(b => b.Name),
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
                                 "DepartmentId", "Name");
             return View(city);
         }
@@ -74,8 +75,9 @@ namespace Ecomerce.Controllers
             if (city == null)
             {
                 return HttpNotFound();
-            }
-            ViewBag.DepartmentId = new SelectList(db.Deparments.OrderBy(b => b.Name),
+            }      
+
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
                                 "DepartmentId", "Name");
             return View(city);
         }
@@ -93,7 +95,7 @@ namespace Ecomerce.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.DepartmentId = new SelectList(db.Deparments.OrderBy(b => b.Name),
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
                                 "DepartmentId", "Name");
             return View(city);
         }

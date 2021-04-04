@@ -6,51 +6,65 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Ecomerce.Clases;
 using Ecomerce.Models;
 
 namespace Ecomerce.Controllers
 {
-    public class DeparmentsController : Controller
+    public class CompaniesController : Controller
     {
         private EcomerceContext db = new EcomerceContext();
 
-        // GET: Deparments
+        // GET: Companies
         public ActionResult Index()
         {
-            return View(db.Deparments.ToList());
+            var companies = db.Companies.Include(c => c.City).Include(c => c.Department);
+            return View(companies.ToList());
         }
 
-        // GET: Deparments/Details/5
+        // GET: Companies/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deparment deparment = db.Deparments.Find(id);
-            if (deparment == null)
+            Company company = db.Companies.Find(id);
+            if (company == null)
             {
                 return HttpNotFound();
             }
-            return View(deparment);
+            return View(company);
         }
 
-        // GET: Deparments/Create
+        // GET: Companies/Create
         public ActionResult Create()
         {
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name");
             return View();
         }
 
-        // POST: Deparments/Create
+        // POST: Companies/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "DepartmentId,Name")] Deparment deparment)
+        public ActionResult Create(Company company)
         {
             if (ModelState.IsValid)
             {
-                db.Deparments.Add(deparment);
+                var pic = string.Empty;
+                var folder = "~/Content/Logos";
+
+                if (company.LogoFile != null)
+                {
+                    pic = FilesHelper.UploadPhoto(company.LogoFile, folder);
+                    pic = string.Format("{0}/{1}", folder, pic);
+                }
+
+                company.Logo = pic;
+                db.Companies.Add(company);
                 try
                 {
                     db.SaveChanges();
@@ -67,37 +81,53 @@ namespace Ecomerce.Controllers
                     else
                     {
                         ModelState.AddModelError(string.Empty, ex.Message);
-                    }                    
-                }                
+                    }
+                }
             }
-            return View(deparment);
+
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", company.DepartmentId);
+            return View(company);
         }
 
-        // GET: Deparments/Edit/5
+        // GET: Companies/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deparment deparment = db.Deparments.Find(id);
-            if (deparment == null)
+            Company company = db.Companies.Find(id);
+            if (company == null)
             {
                 return HttpNotFound();
             }
-            return View(deparment);
+
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", company.DepartmentId);
+            return View(company);
         }
 
-        // POST: Deparments/Edit/5
+        // POST: Companies/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "DepartmentId,Name")] Deparment deparment)
+        public ActionResult Edit(Company company)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(deparment).State = EntityState.Modified;
+                var pic = string.Empty;
+                var folder = "~/Content/Logos";
+
+                if (company.LogoFile != null)
+                {
+                    pic = FilesHelper.UploadPhoto(company.LogoFile, folder);
+                    pic = string.Format("{0}/{1}", folder, pic);
+                }
+
+                company.Logo = pic;
+                db.Entry(company).State = EntityState.Modified;
                 try
                 {
                     db.SaveChanges();
@@ -106,8 +136,8 @@ namespace Ecomerce.Controllers
                 catch (Exception ex)
                 {
                     if (ex.InnerException != null &&
-                       ex.InnerException.InnerException != null &&
-                       ex.InnerException.InnerException.Message.Contains("_Index"))
+                        ex.InnerException.InnerException != null &&
+                        ex.InnerException.InnerException.Message.Contains("_Index"))
                     {
                         ModelState.AddModelError(string.Empty, "There are a record with de same value");
                     }
@@ -116,53 +146,44 @@ namespace Ecomerce.Controllers
                         ModelState.AddModelError(string.Empty, ex.Message);
                     }
                 }
-            }
-            return View(deparment);
+                }
+
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
+            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", company.DepartmentId);
+            return View(company);
         }
 
-        // GET: Deparments/Delete/5
+        // GET: Companies/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Deparment deparment = db.Deparments.Find(id);
-            if (deparment == null)
+            Company company = db.Companies.Find(id);
+            if (company == null)
             {
                 return HttpNotFound();
             }
-            return View(deparment);
+            return View(company);
         }
 
-        // POST: Deparments/Delete/5
+        // POST: Companies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Deparment deparment = db.Deparments.Find(id);
-            db.Deparments.Remove(deparment);
-            try
-            {
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null &&
-                    ex.InnerException.InnerException != null &&
-                    ex.InnerException.InnerException.Message.Contains("REFERENCE")
-                    )
-                {
-                    ModelState.AddModelError(string.Empty, "The record can´t be delete because it has relation records");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                }
+            Company company = db.Companies.Find(id);
+            db.Companies.Remove(company);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
-                return View(deparment);
-            }
+        public JsonResult GetCities(int departmentId)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var cities = db.Cities.Where(c => c.DepartmentId == departmentId);
+            return Json(cities);
         }
 
         protected override void Dispose(bool disposing)

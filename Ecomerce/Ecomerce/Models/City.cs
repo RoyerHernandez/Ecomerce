@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace Ecomerce.Models
+namespace Ecomerce.Models   
 {
     public class City
     {
@@ -16,9 +16,13 @@ namespace Ecomerce.Models
         [Display(Name="City")]
         public string Name { get; set; }
 
+        [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
         public int DepartmentId { get; set; }
 
+        public virtual ICollection<Company> Companies { get; set; }
+
         public virtual Deparment Department { get; set; }
+
     }
 }

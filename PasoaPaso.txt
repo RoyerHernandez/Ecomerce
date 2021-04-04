@@ -27,5 +27,176 @@ initial catalog = BaseDatos; user id = Usuario; password = Contraseña"
 
 12 Se agrega consulta linq para ordenar los departamentos alfabeticamente db.Deparments.OrderBy(b => b.Name),
 
-12
+13 Se modifica las vistas Create para mostrar el boton create al lado del backToList y decorado
+
+14 Se modifica el controlador de cities agregando un nuevo item a la lista desplegable Departments <Select a Department...>
+
+  var departments = db.Deparments.ToList();
+            departments.Add(new Deparment {
+                        DepartmentId = 0,
+                        Name = "[Select a Department...]"
+            });
+
+            departments.OrderBy(b => b.Name).ToList();
+
+15 Se agrega a los modelos Departmet y City datannoteatios para validar el rango del department id [Range(1, Double.MaxValue, ErrorMessage ="You must select a {0}")]
+
+16 Se crea carpeta Clases y se agrega la clase Combos Helper en la cual se crea el metodo GetDepartments, dicho metodo se implementa en el controlador CitiesController
+
+17 Se sobre escribe metodo OnModelCreating para eliminar el delete en cascada 
+
+18 En el Post del delete del controlador de departments se agrega un try/catch para controlar al eliminar un departamento con varias ciudades relacionadas
+ try
+            {
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null &&
+                    ex.InnerException.InnerException != null &&
+                    ex.InnerException.InnerException.Message.Contains("REFERENCE")
+                    )
+                {
+                    ModelState.AddModelError(string.Empty, "The record can´t be delete because it has relation records");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
+                return View(deparment);
+            }
+
+19 ademas se agrega un validation sumari a la vista delete de departments 
+ <h4>Deparment</h4>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+20 agregar a la case Deparment un datannotations tipo index a la propiedad name, para que se evite agregar ciudades duplicadas
+
+21 Por lo anterior se agrega en el controlador de departamentos en los post de create y edith un try/catch para controlar la excepción generada
+  try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                       ex.InnerException.InnerException != null &&
+                       ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
+            }
+
+22 Se agrega el modelo Company y se agregan las propiedades requeridas, ademas se realiza una relación entre ciudades y departamentos.
+
+23 Se agrega controllador para Companies y se ajustan las vistas Layout e Index
+
+24 Se agrega metodo GetCities a CombosHelper y se actualiza controlador Companies para ordenar Ciudades y Departamentos 
+
+25 Agregar validación entre ciudades y Departamentos, para esto se agrega el siguiente codifo en el controlador de Companies 
+
+     public JsonResult GetCities(int departmentId)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var cities = db.Cities.Where(c => c.DepartmentId == departmentId);
+            return Json(cities);
+        }
+
+Con el fin de obtener el departamento para cada ciudad y que nos devuelva el arreglo en formato tipo Json
+
+26 Adicional se agrega a traves de JavaScript - Jquery el siguiente codigo, en donde obtenemos la ciudad para cada departamento
+
+ <script type="text/javascript">
+        $(document).ready(function () {
+            $("#DepartmentId").change(function () {
+                $("#CityId").empty();
+                $("#CityId").append('<option value="0">[Select a City...]</option>');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetCities")',
+                    dataType: 'json',
+                    data: { departmentId: $("#DepartmentId").val() },
+                    success: function (data) {
+                        $.each(data, function (i, data) {
+                            $("#CityId").append('<option value="'
+                             + data.CityId + '">'
+                             + data.Name + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve Cities.' + ex);
+                    }
+                });
+                return false;
+            })
+        });
+    </script>
+
+27 Se agrega propiedad LogoFile para cargar los logos de las compañias 
+        public HttpPostedFileBase Photo { get; set; }
+
+28 se modifica la vista Create de Companies reemplazando la sección para cargar la foto
+
+<div class="form-group">
+    @Html.LabelFor(model => model.LogoFile, htmlAttributes: new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        <span class="btn btn-default btn-file">
+            @Html.TextBoxFor(modelo => modelo.LogoFile, new { type = "file" })
+        </span>
+    </div>
+</div>
+
+29 se modifica el Using en esta misma vista 
+
+@using (Html.BeginForm("Create", "Users", FormMethod.Post, new { enctype = "multipart/form-data" }))
+
+30 Se crea la clase FilesHelper con el siguiente codigo para subir las imagenes de los logos
+
+public static string UploadPhoto(HttpPostedFileBase file, string folder)
+{
+    string path = string.Empty;
+    string pic = string.Empty;
+
+    if (file != null)
+    {
+        pic = Path.GetFileName(file.FileName);
+        path = Path.Combine(HttpContext.Current.Server.MapPath(folder), pic);
+        file.SaveAs(path);
+        using (MemoryStream ms = new MemoryStream())
+        {
+            file.InputStream.CopyTo(ms);
+            byte[] array = ms.GetBuffer();
+        }
+    }
+
+    return pic;
+}
+
+31 Cambiar los metodos Create o Edit para el llamado de la carga de la foto
+ 		var pic = string.Empty;
+                var folder = "~/Content/Logos";
+
+                if (company.LogoFile != null)
+                {
+                    pic = FilesHelper.UploadPhoto(company.LogoFile, folder);
+                    pic = string.Format("{0}/{1}", folder, pic);
+                }
+
+                company.Logo = pic;
+
+32 Cambiar la vista index para mostrar la imagen
+
+@if (!string.IsNullOrEmpty(item.Logo))
+{
+    <img src="@Url.Content(item.Logo)" alt="Image" style="width:100px;height:150px;max-width: 100%; height: auto;" />
+}
+
 
