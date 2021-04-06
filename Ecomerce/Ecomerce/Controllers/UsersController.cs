@@ -51,13 +51,43 @@ namespace Ecomerce.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UserId,UserName,FirstName,LastName,Phone,Address,Photo,DepartmentId,CityId,CompanyId")] User user)
+        public ActionResult Create(User user)
         {
             if (ModelState.IsValid)
             {
                 db.Users.Add(user);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+
+                    if (user.PhotoFile != null)
+                    {
+                        var folder = "~/Content/Users";
+                        var file = string.Format("{0}.jpg", user.CompanyId);
+                        var response = FilesHelper.UploadPhoto(user.PhotoFile, folder, file);
+                        if (response)
+                        {
+                            var pic = string.Format("{0}/{1}.jpg", folder, user.CompanyId);
+                            user.Photo = pic;
+                            db.Entry(user).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                        ex.InnerException.InnerException != null &&
+                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
             }
 
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
@@ -73,7 +103,9 @@ namespace Ecomerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+
+            var user = db.Users.Find(id);
+
             if (user == null)
             {
                 return HttpNotFound();
@@ -89,13 +121,41 @@ namespace Ecomerce.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "UserId,UserName,FirstName,LastName,Phone,Address,Photo,DepartmentId,CityId,CompanyId")] User user)
+        public ActionResult Edit(User user)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (user.PhotoFile != null)
+                {
+                    var pic = string.Empty;
+                    var folder = "~/Content/Users";
+                    var file = string.Format("{0}.jpg", user.CompanyId);
+                    var response = FilesHelper.UploadPhoto(user.PhotoFile, folder, file);
+                    if (response)
+                    {
+                        pic = string.Format("{0}/{1}.jpg", folder, user.CompanyId);
+                        user.Photo = pic;
+                    }
+                }
+                try
+                {
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                        ex.InnerException.InnerException != null &&
+                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
             }
             ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
             ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
@@ -127,6 +187,13 @@ namespace Ecomerce.Controllers
             db.Users.Remove(user);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public JsonResult GetCities(int departmentId)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var cities = db.Cities.Where(c => c.DepartmentId == departmentId);
+            return Json(cities);
         }
 
         protected override void Dispose(bool disposing)

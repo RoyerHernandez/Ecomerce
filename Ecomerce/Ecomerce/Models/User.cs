@@ -42,14 +42,17 @@ namespace Ecomerce.Models
 
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
+        [Display(Name ="Department")]
         public int DepartmentId { get; set; }
 
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
+        [Display(Name = "City")]
         public int CityId { get; set; }
 
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
+        [Display(Name = "Company")]
         public int CompanyId { get; set; }
 
         public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
