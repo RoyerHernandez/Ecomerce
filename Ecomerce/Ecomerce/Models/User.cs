@@ -7,19 +7,29 @@ using System.Web;
 
 namespace Ecomerce.Models
 {
-    public class Company
+    public class User
     {
         [Key]
-        public int CompanyId { get; set; }
+        public int UserId { get; set; }
+
+        [Required(ErrorMessage = "The field is required")]
+        [MaxLength(256, ErrorMessage = "The field could be maximun {1} characters")]
+        [Display(Name = "E-Mail")]
+        [Index("User_UserName_Index", IsUnique = true)]
+        public string UserName { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
         [MaxLength(50, ErrorMessage = "The field could be maximun {1} characters")]
-        [Display(Name = "Company")]
-        [Index("Company_Name_Index", IsUnique = true)]
-        public string Name { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
-        [MaxLength(20, ErrorMessage = "The field could be maximun {1} characters")]        
+        [MaxLength(50, ErrorMessage = "The field could be maximun {1} characters")]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required(ErrorMessage = "The field is required")]
+        [MaxLength(20, ErrorMessage = "The field could be maximun {1} characters")]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
@@ -28,7 +38,7 @@ namespace Ecomerce.Models
         public string Address { get; set; }
 
         [DataType(DataType.ImageUrl)]
-        public string Logo { get; set; }
+        public string Photo { get; set; }
 
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
@@ -38,14 +48,19 @@ namespace Ecomerce.Models
         [Required(ErrorMessage = "The field is required")]
         public int CityId { get; set; }
 
+        [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
+        [Required(ErrorMessage = "The field is required")]
+        public int CompanyId { get; set; }
+
+        public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
+
         [NotMapped]
-        public HttpPostedFileBase LogoFile { get; set; }
+        public HttpPostedFileBase PhotoFile { get; set; }
 
         public virtual City City { get; set; }
 
         public virtual Deparment Department { get; set; }
 
-        public virtual ICollection<User> Users { get; set; }
-
+        public virtual Company Company { get; set; }
     }
 }

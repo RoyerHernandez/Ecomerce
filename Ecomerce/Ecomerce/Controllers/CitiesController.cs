@@ -55,8 +55,24 @@ namespace Ecomerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Cities.Add(city);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                       ex.InnerException.InnerException != null &&
+                       ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
             }
 
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
@@ -92,8 +108,24 @@ namespace Ecomerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(city).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                        ex.InnerException.InnerException != null &&
+                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
             }
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
                                 "DepartmentId", "Name");
