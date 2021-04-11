@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ecomerce.Clases;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -16,10 +17,18 @@ namespace Ecomerce
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<Models.EcomerceContext, Migrations.Configuration>());
             AreaRegistration.RegisterAllAreas();
+            CheckRolesAndSuperUser();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
+
+        private void CheckRolesAndSuperUser()
+        {
+            UsersHelper.CheckRole("Admin");
+            UsersHelper.CheckRole("User");
+            UsersHelper.CheckSuperUser();
         }
     }
 }
