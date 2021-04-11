@@ -47,5 +47,7 @@ namespace Ecomerce.Models
 
         public virtual ICollection<User> Users { get; set; }
 
+        public virtual ICollection<Category> Categories { get; set; }
+
     }
 }
