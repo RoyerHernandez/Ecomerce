@@ -59,15 +59,15 @@ namespace Ecomerce.Controllers
                 try
                 {
                     db.SaveChanges();
-                    UsersHelper.CreateUserASP(user.UserName, "User");
+                    UsersHelper.CreateUserASP(user.UserName, "User", user.UserName);
                     if (user.PhotoFile != null)
                     {
                         var folder = "~/Content/Users";
-                        var file = string.Format("{0}.jpg", user.CompanyId);
+                        var file = string.Format("{0}.jpg", user.UserId);
                         var response = FilesHelper.UploadPhoto(user.PhotoFile, folder, file);
                         if (response)
                         {
-                            var pic = string.Format("{0}/{1}.jpg", folder, user.CompanyId);
+                            var pic = string.Format("{0}/{1}.jpg", folder, user.UserId);
                             user.Photo = pic;
                             db.Entry(user).State = EntityState.Modified;
                             db.SaveChanges();
@@ -129,11 +129,11 @@ namespace Ecomerce.Controllers
                 {
                     var pic = string.Empty;
                     var folder = "~/Content/Users";
-                    var file = string.Format("{0}.jpg", user.CompanyId);
+                    var file = string.Format("{0}.jpg", user.UserId);
                     var response = FilesHelper.UploadPhoto(user.PhotoFile, folder, file);
                     if (response)
                     {
-                        pic = string.Format("{0}/{1}.jpg", folder, user.CompanyId);
+                        pic = string.Format("{0}/{1}.jpg", folder, user.UserId);
                         user.Photo = pic;
                     }
                 }
@@ -141,6 +141,15 @@ namespace Ecomerce.Controllers
                 {
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();
+
+                    var db2 = new EcomerceContext();
+                    var currentUser = db2.Users.Find(user.UserId);
+                    if (currentUser.UserName != user.UserName )
+                    {
+                        UsersHelper.UpdateUser(currentUser.UserName, user.UserName);
+                    }
+                    db2.Dispose();
+
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
@@ -170,7 +179,7 @@ namespace Ecomerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+            var user = db.Users.Find(id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -183,9 +192,10 @@ namespace Ecomerce.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            User user = db.Users.Find(id);
+            var user = db.Users.Find(id);
             db.Users.Remove(user);
             db.SaveChanges();
+            UsersHelper.DeleteUser(user.UserName);
             return RedirectToAction("Index");
         }
 

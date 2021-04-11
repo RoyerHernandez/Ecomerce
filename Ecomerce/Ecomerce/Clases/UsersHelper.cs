@@ -15,7 +15,34 @@ namespace Ecomerce.Clases
     private static ApplicationDbContext userContext = new ApplicationDbContext();
     private static EcomerceContext db = new EcomerceContext();
 
-    public static void CheckRole(string roleName)
+    public static bool DeleteUser(string userName)
+    {
+            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+            var userAsp = userManager.FindByEmail(userName);
+            if (userAsp == null)
+            {
+                return false;
+            }
+            var response = userManager.Delete(userAsp);
+            return response.Succeeded;
+        }
+
+   public static bool UpdateUser(string userCurrentEmail, string userNewtEmail)
+   {
+           var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
+           var userAsp = userManager.FindByEmail(userCurrentEmail);
+
+            if (userAsp == null)
+            {
+                return false;
+            }
+            userAsp.UserName = userNewtEmail;
+            userAsp.Email = userNewtEmail;
+            var response = userManager.Update(userAsp);
+            return response.Succeeded;
+    }
+
+            public static void CheckRole(string roleName)
     {
         var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(userContext));
 
@@ -40,20 +67,6 @@ namespace Ecomerce.Clases
 
         userManager.AddToRole(userASP.Id, "Admin");
     }
-    public static void CreateUserASP(string email, string roleName)
-    {
-        var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
-
-        var userASP = new ApplicationUser
-        {
-            Email = email,
-            UserName = email,
-        };
-
-        userManager.Create(userASP, email);
-        userManager.AddToRole(userASP.Id, roleName);
-    }
-
     public static void CreateUserASP(string email, string roleName, string password)
     {
         var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
@@ -68,7 +81,7 @@ namespace Ecomerce.Clases
         userManager.AddToRole(userASP.Id, roleName);
     }
 
-    public static async Task PasswordRecovery(string email)
+        public static async Task PasswordRecovery(string email)
     {
         var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
         var userASP = userManager.FindByEmail(email);
