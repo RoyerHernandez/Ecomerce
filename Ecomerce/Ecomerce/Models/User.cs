@@ -40,6 +40,9 @@ namespace Ecomerce.Models
         [DataType(DataType.ImageUrl)]
         public string Photo { get; set; }
 
+        [NotMapped]
+        public HttpPostedFileBase PhotoFile { get; set; }
+
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
         [Display(Name ="Department")]
@@ -55,10 +58,7 @@ namespace Ecomerce.Models
         [Display(Name = "Company")]
         public int CompanyId { get; set; }
 
-        public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
-
-        [NotMapped]
-        public HttpPostedFileBase PhotoFile { get; set; }
+        public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }       
 
         public virtual City City { get; set; }
 

@@ -20,7 +20,7 @@ namespace Ecomerce.Models
 
         [Required(ErrorMessage = "The field is required")]
         [DisplayFormat(DataFormatString = "{0:P2}", ApplyFormatInEditMode = false)]
-        [Range(0.0, 1.0, ErrorMessage = "You must select a values between {1} and {2}")]
+        [Range(0, 1, ErrorMessage = "You must select a values between {1} and {2}")]
         public double Rate { get; set; }
 
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
@@ -30,5 +30,7 @@ namespace Ecomerce.Models
         public int CompanyId { get; set; }
 
         public virtual Company Company { get; set; }
+
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

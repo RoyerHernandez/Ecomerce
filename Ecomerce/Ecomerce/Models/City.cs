@@ -21,6 +21,7 @@ namespace Ecomerce.Models
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
         [Index("City_Name_Index", 1 ,IsUnique = true)]
+        [Display(Name = "Department")]
         public int DepartmentId { get; set; }
 
         public virtual ICollection<Company> Companies { get; set; }
