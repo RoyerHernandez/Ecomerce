@@ -10,6 +10,7 @@ using Ecomerce.Models;
 
 namespace Ecomerce.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DeparmentsController : Controller
     {
         private EcomerceContext db = new EcomerceContext();
@@ -93,7 +94,7 @@ namespace Ecomerce.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "DepartmentId,Name")] Deparment deparment)
+        public ActionResult Edit(Deparment deparment)
         {
             if (ModelState.IsValid)
             {

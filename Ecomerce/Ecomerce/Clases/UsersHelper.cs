@@ -64,9 +64,9 @@ namespace Ecomerce.Clases
             CreateUserASP(email, "Admin", password);
             return;
         }
-
         userManager.AddToRole(userASP.Id, "Admin");
     }
+
     public static void CreateUserASP(string email, string roleName, string password)
     {
         var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));

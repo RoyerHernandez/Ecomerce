@@ -6,56 +6,64 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Ecomerce.Clases;
 using Ecomerce.Models;
 
 namespace Ecomerce.Controllers
 {
-    [Authorize(Roles = "Admin")]
-    public class CitiesController : Controller
-    {
+    [Authorize(Roles = "User")]
+    public class TaxesController : Controller
+    {        
         private EcomerceContext db = new EcomerceContext();
 
-        // GET: Cities
+        // GET: Taxes
         public ActionResult Index()
         {
-            var cities = db.Cities.Include(c => c.Department);
-            return View(cities.ToList());
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return View("Index", "Home");
+            }
+            var taxes = db.Taxes.Where(t => t.CompanyId == user.CompanyId);
+            return View(taxes.ToList());
         }
 
-        // GET: Cities/Details/5
+        // GET: Taxes/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Tax tax = db.Taxes.Find(id);
+            if (tax == null)
             {
                 return HttpNotFound();
             }
-            return View(city);
+            return View(tax);
         }
 
-        // GET: Cities/Create
+        // GET: Taxes/Create
         public ActionResult Create()
         {
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), 
-                                "DepartmentId", "Name");
-            return View();
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return View("Index", "Home");
+            }
+            var tax = new Tax { CompanyId = user.CompanyId };
+            return View(tax);
         }
 
-        // POST: Cities/Create
+        // POST: Taxes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Create(Tax tax)
         {
             if (ModelState.IsValid)
             {
-                db.Cities.Add(city);
+                db.Taxes.Add(tax);
                 try
                 {
                     db.SaveChanges();
@@ -64,8 +72,8 @@ namespace Ecomerce.Controllers
                 catch (Exception ex)
                 {
                     if (ex.InnerException != null &&
-                       ex.InnerException.InnerException != null &&
-                       ex.InnerException.InnerException.Message.Contains("_Index"))
+                                           ex.InnerException.InnerException != null &&
+                                           ex.InnerException.InnerException.Message.Contains("_Index"))
                     {
                         ModelState.AddModelError(string.Empty, "There are a record with de same value");
                     }
@@ -75,40 +83,34 @@ namespace Ecomerce.Controllers
                     }
                 }
             }
-
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
-                                "DepartmentId", "Name");
-            return View(city);
+            return View(tax);
         }
 
-        // GET: Cities/Edit/5
+        // GET: Taxes/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            var tax = db.Taxes.Find(id);
+            if (tax == null)
             {
                 return HttpNotFound();
-            }      
-
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
-                                "DepartmentId", "Name");
-            return View(city);
+            }
+            return View(tax);
         }
 
-        // POST: Cities/Edit/5
+        // POST: Taxes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CityId,Name,DepartmentId")] City city)
+        public ActionResult Edit( Tax tax)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(city).State = EntityState.Modified;
+                db.Entry(tax).State = EntityState.Modified;
                 try
                 {
                     db.SaveChanges();
@@ -117,8 +119,8 @@ namespace Ecomerce.Controllers
                 catch (Exception ex)
                 {
                     if (ex.InnerException != null &&
-                        ex.InnerException.InnerException != null &&
-                        ex.InnerException.InnerException.Message.Contains("_Index"))
+                                          ex.InnerException.InnerException != null &&
+                                          ex.InnerException.InnerException.Message.Contains("_Index"))
                     {
                         ModelState.AddModelError(string.Empty, "There are a record with de same value");
                     }
@@ -128,33 +130,31 @@ namespace Ecomerce.Controllers
                     }
                 }
             }
-            ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(),
-                                "DepartmentId", "Name");
-            return View(city);
+            return View(tax);
         }
 
-        // GET: Cities/Delete/5
+        // GET: Taxes/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            City city = db.Cities.Find(id);
-            if (city == null)
+            Tax tax = db.Taxes.Find(id);
+            if (tax == null)
             {
                 return HttpNotFound();
             }
-            return View(city);
+            return View(tax);
         }
 
-        // POST: Cities/Delete/5
+        // POST: Taxes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            City city = db.Cities.Find(id);
-            db.Cities.Remove(city);
+            Tax tax = db.Taxes.Find(id);
+            db.Taxes.Remove(tax);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

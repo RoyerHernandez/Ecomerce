@@ -10,14 +10,20 @@ using Ecomerce.Models;
 
 namespace Ecomerce.Controllers
 {
+    [Authorize(Roles = "User")]
     public class CategoriesController : Controller
     {
-        private EcomerceContext db = new EcomerceContext();
+        private EcomerceContext db = new EcomerceContext();        
 
         // GET: Categories
         public ActionResult Index()
         {
-            var categories = db.Categories.Include(c => c.Company);
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return View("Index", "Home");
+            }
+            var categories = db.Categories.Where(c => c.CompanyId == user.CompanyId);
             return View(categories.ToList());
         }
 
@@ -39,8 +45,13 @@ namespace Ecomerce.Controllers
         // GET: Categories/Create
         public ActionResult Create()
         {
-            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name");
-            return View();
+            var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            if (user == null)
+            {
+                return View("Index", "Home");
+            }
+            var category = new Category { CompanyId = user.CompanyId };
+            return View(category);
         }
 
         // POST: Categories/Create
@@ -48,13 +59,29 @@ namespace Ecomerce.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CategoryId,Description,CompanyId")] Category category)
+        public ActionResult Create(Category category)
         {
             if (ModelState.IsValid)
             {
                 db.Categories.Add(category);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                       ex.InnerException.InnerException != null &&
+                       ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
             }
 
             ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
@@ -68,12 +95,11 @@ namespace Ecomerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
+            var category = db.Categories.Find(id);
             if (category == null)
             {
                 return HttpNotFound();
-            }
-            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
+            }            
             return View(category);
         }
 
@@ -82,13 +108,29 @@ namespace Ecomerce.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CategoryId,Description,CompanyId")] Category category)
+        public ActionResult Edit(Category category)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(category).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null &&
+                                          ex.InnerException.InnerException != null &&
+                                          ex.InnerException.InnerException.Message.Contains("_Index"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with de same value");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    }
+                }
             }
             ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "Name", category.CompanyId);
             return View(category);

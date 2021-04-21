@@ -49,5 +49,7 @@ namespace Ecomerce.Models
 
         public virtual ICollection<Category> Categories { get; set; }
 
+        public virtual ICollection<Tax> Taxes { get; set; }
+
     }
 }
