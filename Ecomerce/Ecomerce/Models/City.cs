@@ -28,6 +28,8 @@ namespace Ecomerce.Models
 
         public virtual ICollection<User> Users { get; set; }
 
+        public virtual ICollection<WareHouse> WareHouses { get; set; }
+
         public virtual Deparment Department { get; set; }
 
     }

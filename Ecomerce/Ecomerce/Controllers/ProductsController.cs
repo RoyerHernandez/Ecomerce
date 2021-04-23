@@ -71,11 +71,11 @@ namespace Ecomerce.Controllers
                     if (product.ImageFile != null)
                     {
                         var folder = "~/Content/Products";
-                        var file = string.Format("{0}.jpg", product.CompanyId);
+                        var file = string.Format("{0}.jpg", product.ProductId);
                         var response = FilesHelper.UploadPhoto(product.ImageFile, folder, file);
                         if (response)
                         {
-                            var pic = string.Format("{0}/{1}.jpg", folder, product.CompanyId);
+                            var pic = string.Format("{0}/{1}.jpg", folder, product.ProductId);
                             product.Image = pic;
                             db.Entry(product).State = EntityState.Modified;
                             db.SaveChanges();
@@ -129,6 +129,18 @@ namespace Ecomerce.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (product.ImageFile != null)
+                {
+                    var pic = string.Empty;
+                    var folder = "~/Content/Products";
+                    var file = string.Format("{0}.jpg", product.ProductId);
+                    var response = FilesHelper.UploadPhoto(product.ImageFile, folder, file);
+                    if (response)
+                    {
+                        pic = string.Format("{0}/{1}.jpg", folder, product.ProductId);
+                        product.Image = pic;
+                    }
+                }
                 db.Entry(product).State = EntityState.Modified;
                 try
                 {

@@ -13,28 +13,28 @@ namespace Ecomerce.Models
         public int UserId { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
-        [MaxLength(256, ErrorMessage = "The field could be maximun {1} characters")]
+        [MaxLength(256, ErrorMessage = "The field {0} must be maximun {1} characters")]
         [Display(Name = "E-Mail")]
         [Index("User_UserName_Index", IsUnique = true)]
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
-        [MaxLength(50, ErrorMessage = "The field could be maximun {1} characters")]
+        [MaxLength(50, ErrorMessage = "The field {0} must be maximun {1} characters")]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
-        [MaxLength(50, ErrorMessage = "The field could be maximun {1} characters")]
+        [MaxLength(50, ErrorMessage = "The field {0} must be maximun {1} characters")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
-        [MaxLength(20, ErrorMessage = "The field could be maximun {1} characters")]
+        [MaxLength(20, ErrorMessage = "The field {0} must be maximun {1} characters")]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "The field is required")]
-        [MaxLength(100, ErrorMessage = "The field could be maximun {1} characters")]
+        [MaxLength(100, ErrorMessage = "The field {0} must be maximun {1} characters")]
         public string Address { get; set; }
 
         [DataType(DataType.ImageUrl)]
