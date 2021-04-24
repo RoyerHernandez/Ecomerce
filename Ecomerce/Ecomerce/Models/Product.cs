@@ -41,6 +41,9 @@ namespace Ecomerce.Models
         [Display(Name = "Tax")]
         public int TaxId { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)]
+        [Display(Name = "Stock")]
+        public double Stock { get { return Inventories.Sum(i => i.Stock); } }
 
         [Required(ErrorMessage = "The field is required")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
@@ -62,5 +65,7 @@ namespace Ecomerce.Models
         public virtual Category Category { get; set; }
 
         public virtual Tax Tax { get; set; }
+
+        public virtual ICollection<Inventory> Inventories { get; set; }
     }
 }

@@ -55,5 +55,7 @@ namespace Ecomerce.Models
 
         public virtual ICollection<WareHouse> WareHouses { get; set; }
 
+        public virtual ICollection<Customer> Customers { get; set; }
+
     }
 }

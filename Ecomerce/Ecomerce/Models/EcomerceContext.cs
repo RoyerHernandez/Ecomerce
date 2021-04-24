@@ -21,18 +21,24 @@ namespace Ecomerce.Models
 
         public DbSet<Ecomerce.Models.Deparment> Deparments { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.City> Cities { get; set; }
+        public DbSet<Ecomerce.Models.City> Cities { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.Company> Companies { get; set; }
+        public DbSet<Ecomerce.Models.Company> Companies { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.User> Users { get; set; }
+        public DbSet<Ecomerce.Models.User> Users { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.Category> Categories { get; set; }
+        public DbSet<Ecomerce.Models.Category> Categories { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.Tax> Taxes { get; set; }
+        public DbSet<Ecomerce.Models.Tax> Taxes { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.Product> Products { get; set; }
+        public DbSet<Ecomerce.Models.Product> Products { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.WareHouse> WareHouses { get; set; }
+        public DbSet<Ecomerce.Models.WareHouse> WareHouses { get; set; }
+
+        public DbSet<Ecomerce.Models.Inventory> Inventories { get; set; }
+
+        public System.Data.Entity.DbSet<Ecomerce.Models.Customer> Customers { get; set; }
+
+        public System.Data.Entity.DbSet<Ecomerce.Models.State> States { get; set; }
     }
 }

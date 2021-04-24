@@ -34,7 +34,7 @@ namespace Ecomerce.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
+            var category = db.Categories.Find(id);
             if (category == null)
             {
                 return HttpNotFound();
