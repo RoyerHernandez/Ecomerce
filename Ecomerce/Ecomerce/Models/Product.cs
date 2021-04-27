@@ -67,5 +67,9 @@ namespace Ecomerce.Models
         public virtual Tax Tax { get; set; }
 
         public virtual ICollection<Inventory> Inventories { get; set; }
+
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+
+        public virtual ICollection<OrderDetailTemp> OrderDetailTemps { get; set; }
     }
 }

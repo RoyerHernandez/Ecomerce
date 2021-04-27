@@ -18,5 +18,7 @@ namespace Ecomerce.Models
         [Index("State_Description_Index", IsUnique = true)]
         public string Description { get; set; }
 
+        public virtual ICollection<Order> Orders { get; set; }
+
     }
 }

@@ -37,8 +37,14 @@ namespace Ecomerce.Models
 
         public DbSet<Ecomerce.Models.Inventory> Inventories { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.Customer> Customers { get; set; }
+        public DbSet<Ecomerce.Models.Customer> Customers { get; set; }
 
-        public System.Data.Entity.DbSet<Ecomerce.Models.State> States { get; set; }
+        public DbSet<Ecomerce.Models.State> States { get; set; }
+
+        public DbSet<Ecomerce.Models.Order> Orders { get; set; }
+
+        public DbSet<Ecomerce.Models.OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<Ecomerce.Models.OrderDetailTemp> OrderDetailTemps { get; set; }
     }
 }

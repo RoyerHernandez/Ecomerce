@@ -23,6 +23,18 @@ namespace Ecomerce.Clases
 
         }
 
+        public static List<Product> GetProducts(int companyId)
+        {
+            var product = db.Products.Where(c => c.CompanyId == companyId).ToList();
+            product.Add(new Product
+            {
+                ProductId = 0,
+                Description = "[Select a Product...]",
+            });
+
+            return product.OrderBy(p => p.Description).ToList();
+        }
+
         public static List<City> GetCities()
         {
             var cities = db.Cities.ToList();
@@ -66,6 +78,18 @@ namespace Ecomerce.Clases
             return categories.OrderBy(b => b.Description).ToList();
         }
 
+        public static List<Customer> GetCustomers(int companyId)
+        {
+            var customer = db.Customers.Where(c => c.CompanyId == companyId).ToList();
+            customer.Add(new Customer
+            {
+                CustomerId = 0,
+                FirstName = "[Select a Customer...]",
+            });
+
+            return customer.OrderBy(c => c.FirstName).ThenBy(c => c.LastName).ToList();
+        }
+
         public static List<Tax> GetTaxes(int companyId)
         {
             var taxes = db.Taxes.Where(c => c.CompanyId == companyId).ToList();
@@ -75,7 +99,7 @@ namespace Ecomerce.Clases
                 Description = "[Select a tax...]",
             });
 
-            return taxes.OrderBy(b => b.Description).ToList();
+            return taxes.OrderBy(t => t.Description).ToList();
         }
     }
 }
