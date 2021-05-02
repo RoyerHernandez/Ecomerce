@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Ecomerce.Clases;
 using Ecomerce.Models;
+using PagedList;
 
 namespace Ecomerce.Controllers
 {
@@ -72,16 +73,17 @@ namespace Ecomerce.Controllers
         public ActionResult AddProduct()
         {
             var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            ViewBag.ProductId = new SelectList(CombosHelper.GetProducts(user.CompanyId), "ProductId", "Description");
+            ViewBag.ProductId = new SelectList(CombosHelper.GetProducts(user.CompanyId, true), "ProductId", "Description");
             return PartialView();
         }
 
         // GET: Orders
-        public ActionResult Index()
+        public ActionResult Index(int? page = null)
         {
+            page = (page ?? 1);
             var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var orders = db.Orders.Where(o => o.CompanyId == user.CompanyId).Include(o => o.Customer).Include(o => o.State);
-            return View(orders.ToList());
+            return View(orders.OrderByDescending(o => o.Date).ToPagedList((int)page, 5));
         }
 
         // GET: Orders/Details/5

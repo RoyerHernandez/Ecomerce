@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Ecomerce.Clases;
 using Ecomerce.Models;
+using PagedList;
 
 namespace Ecomerce.Controllers
 {
@@ -17,10 +18,11 @@ namespace Ecomerce.Controllers
         private EcomerceContext db = new EcomerceContext();
 
         // GET: Users
-        public ActionResult Index()
+        public ActionResult Index(int? page= null)
         {
+            page = (page ?? 1);
             var users = db.Users.Include(u => u.City).Include(u => u.Company).Include(u => u.Department);
-            return View(users.ToList());
+            return View(users.OrderBy(u => u.City.Name).ThenBy(u => u.FirstName).ToPagedList((int)page, 5));
         }
 
         // GET: Users/Details/5
@@ -41,7 +43,7 @@ namespace Ecomerce.Controllers
         // GET: Users/Create
         public ActionResult Create()
         {
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(0), "CityId", "Name");
             ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name");
             return View();
@@ -91,7 +93,7 @@ namespace Ecomerce.Controllers
                 }
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(user.DepartmentId), "CityId", "Name", user.CityId);
             ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", user.DepartmentId);
             return View(user);
@@ -111,7 +113,7 @@ namespace Ecomerce.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(user.DepartmentId), "CityId", "Name", user.CityId);
             ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", user.DepartmentId);
             return View(user);
@@ -167,7 +169,7 @@ namespace Ecomerce.Controllers
                     }
                 }
             }
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", user.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(user.DepartmentId), "CityId", "Name", user.CityId);
             ViewBag.CompanyId = new SelectList(CombosHelper.GetCompanies(), "CompanyId", "Name", user.CompanyId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", user.DepartmentId);
             return View(user);
@@ -196,15 +198,8 @@ namespace Ecomerce.Controllers
             var user = db.Users.Find(id);
             db.Users.Remove(user);
             db.SaveChanges();
-            UsersHelper.DeleteUser(user.UserName);
+            UsersHelper.DeleteUser(user.UserName, "User");
             return RedirectToAction("Index");
-        }
-
-        public JsonResult GetCities(int departmentId)
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var cities = db.Cities.Where(c => c.DepartmentId == departmentId);
-            return Json(cities);
         }
 
         protected override void Dispose(bool disposing)

@@ -42,8 +42,8 @@ namespace Ecomerce.Models
         public int TaxId { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)]
-        [Display(Name = "Stock")]
-        public double Stock { get { return Inventories.Sum(i => i.Stock); } }
+        [Display(Name = "Stock")]        
+        public double Stock { get; set; } 
 
         [Required(ErrorMessage = "The field is required")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]

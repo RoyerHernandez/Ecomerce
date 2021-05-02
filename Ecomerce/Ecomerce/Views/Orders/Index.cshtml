@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Ecomerce.Models.Order>
+﻿@model PagedList.PagedList<Ecomerce.Models.Order>
+@using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Orders";
@@ -7,45 +8,54 @@
 <h2>Orders</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create", new { }, new { @class="btn btn-primary"})
+    @Html.ActionLink("Create New", "Create", new { }, new { @class = "btn btn-primary" })
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Customer.FullName)
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Customer.FullName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.State.Description)
+            @Html.DisplayNameFor(model => model.FirstOrDefault().State.Description)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Date)
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Date)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Remarks)
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Remarks)
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Customer.FullName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.State.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Remarks)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.OrderId }, new { @class = "btn btn-warning" }) |
-            @Html.ActionLink("Details", "Details", new { id=item.OrderId }, new { @class = "btn btn-primary" }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.OrderId }, new { @class = "btn btn-danger" })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remarks)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.OrderId }, new { @class = "btn btn-warning" }) |
+                @Html.ActionLink("Details", "Details", new { id = item.OrderId }, new { @class = "btn btn-primary" }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.OrderId }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    }
 
 </table>
+Page: @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber), of: @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new
+{
+    page,
+    sortOrder =
+    ViewBag.CurrentSort,
+    currentFilter = ViewBag.CurrentFilter
+}))

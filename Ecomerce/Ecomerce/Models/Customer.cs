@@ -13,14 +13,8 @@ namespace Ecomerce.Models
         public int CustomerId { get; set; }
 
         [Required(ErrorMessage = "The field {0} is required")]
-        [Range(1, double.MaxValue, ErrorMessage = "You must select a {0}")]
-        [Display(Name = "Company")]
-        public int CompanyId { get; set; }
-
-        [Required(ErrorMessage = "The field {0} is required")]
         [MaxLength(256, ErrorMessage = "The filed {0} must be maximun {1} characters length")]
         [Display(Name = "E-Mail")]
-        [Index("Customer_UserName_Index", IsUnique = true)]
         [DataType(DataType.EmailAddress)]
         public string UserName { get; set; }
 
@@ -43,6 +37,12 @@ namespace Ecomerce.Models
         [MaxLength(100, ErrorMessage = "The filed {0} must be maximun {1} characters length")]
         public string Address { get; set; }
 
+        [DataType(DataType.ImageUrl)]
+        public string PhotoCustomer { get; set; }
+
+        [NotMapped]
+        public HttpPostedFileBase PhotoCustomerFile { get; set; }
+
         [Required(ErrorMessage = "The field {0} is required")]
         [Range(1, double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Display(Name = "Department")]
@@ -60,9 +60,9 @@ namespace Ecomerce.Models
 
         public virtual City City { get; set; }
 
-        public virtual Company Company { get; set; }
-
         public virtual ICollection<Order> Orders { get; set; }
+
+        public virtual ICollection<CompanyCustomer> CompanyCustomers { get; set; }
 
     }
 }

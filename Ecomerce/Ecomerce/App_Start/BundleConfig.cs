@@ -23,7 +23,8 @@ namespace Ecomerce
                       "~/Scripts/moment.js",
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/bootstrap-datetimepicker.js",
-                      "~/Scripts/fileupload.js"));
+                      "~/Scripts/fileupload.js",
+                      "~/Scripts/ecommerce.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

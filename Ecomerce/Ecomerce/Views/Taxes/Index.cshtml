@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Ecomerce.Models.Tax>
+﻿@model PagedList.PagedList<Ecomerce.Models.Tax>
+@using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Tax";
@@ -12,10 +13,10 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Description)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Rate)
+            @Html.DisplayNameFor(model => model.FirstOrDefault().Rate)
         </th>
         <th></th>
     </tr>
@@ -38,3 +39,11 @@
     }
 
 </table>
+Page: @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber), Of: @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new
+{
+    page,
+    sortOrder =
+    ViewBag.CurrentSort,
+    currentFilter = ViewBag.CurrentFilter
+}))

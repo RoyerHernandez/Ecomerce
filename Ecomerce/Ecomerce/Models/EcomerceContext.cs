@@ -46,5 +46,7 @@ namespace Ecomerce.Models
         public DbSet<Ecomerce.Models.OrderDetail> OrderDetails { get; set; }
 
         public DbSet<Ecomerce.Models.OrderDetailTemp> OrderDetailTemps { get; set; }
+
+        public DbSet <Ecomerce.Models.CompanyCustomer> CompanyCustomers { get; set; }
     }
 }

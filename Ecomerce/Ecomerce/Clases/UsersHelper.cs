@@ -15,7 +15,7 @@ namespace Ecomerce.Clases
     private static ApplicationDbContext userContext = new ApplicationDbContext();
     private static EcomerceContext db = new EcomerceContext();
 
-    public static bool DeleteUser(string userName)
+    public static bool DeleteUser(string userName, string rolName)
     {
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
             var userAsp = userManager.FindByEmail(userName);
@@ -23,7 +23,7 @@ namespace Ecomerce.Clases
             {
                 return false;
             }
-            var response = userManager.Delete(userAsp);
+            var response = userManager.RemoveFromRole(userAsp.Id, rolName);
             return response.Succeeded;
         }
 
@@ -71,14 +71,19 @@ namespace Ecomerce.Clases
     {
         var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(userContext));
 
-        var userASP = new ApplicationUser
-        {
-            Email = email,
-            UserName = email,
-        };
+            var userASP = userManager.FindByEmail(email);
 
-        userManager.Create(userASP, password);
-        userManager.AddToRole(userASP.Id, roleName);
+            if (userASP == null)
+            { 
+                    userASP = new ApplicationUser
+                    {
+                        Email = email,
+                        UserName = email,
+                    };
+                 userManager.Create(userASP, password);
+            }
+
+            userManager.AddToRole(userASP.Id, roleName);
     }
 
         public static async Task PasswordRecovery(string email)

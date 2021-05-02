@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Ecomerce.Clases;
 using Ecomerce.Models;
+using PagedList;
 
 namespace Ecomerce.Controllers
 {
@@ -17,10 +18,11 @@ namespace Ecomerce.Controllers
         private EcomerceContext db = new EcomerceContext();
 
         // GET: Companies
-        public ActionResult Index()
+        public ActionResult Index(int? page = null)
         {
-            var companies = db.Companies.Include(c => c.City).Include(c => c.Department);
-            return View(companies.ToList());
+            page = (page ?? 1);
+            var companies = db.Companies.Include(c => c.City).Include(c => c.Department).OrderBy(c => c.Name);
+            return View(companies.ToPagedList((int)page, 5));
         }
 
         // GET: Companies/Details/5
@@ -41,7 +43,7 @@ namespace Ecomerce.Controllers
         // GET: Companies/Create
         public ActionResult Create()
         {
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(0), "CityId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name");
             return View();
         }
@@ -90,7 +92,7 @@ namespace Ecomerce.Controllers
                 }
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(company.DepartmentId), "CityId", "Name", company.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", company.DepartmentId);
             return View(company);
         }
@@ -110,7 +112,7 @@ namespace Ecomerce.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(company.DepartmentId), "CityId", "Name", company.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", company.DepartmentId);
             return View(company);
         }
@@ -157,7 +159,7 @@ namespace Ecomerce.Controllers
                 }
                 }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", company.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(company.DepartmentId), "CityId", "Name", company.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", company.DepartmentId);
             return View(company);
         }
@@ -186,13 +188,6 @@ namespace Ecomerce.Controllers
             db.Companies.Remove(company);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        public JsonResult GetCities(int departmentId)
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var cities = db.Cities.Where(c => c.DepartmentId == departmentId);
-            return Json(cities);
         }
 
         protected override void Dispose(bool disposing)

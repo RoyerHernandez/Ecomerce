@@ -23,9 +23,15 @@ namespace Ecomerce.Clases
 
         }
 
+        public static List<Product> GetProducts(int companyId, bool sw)
+        {
+            var products = db.Products.Where(p => p.CompanyId == companyId).ToList();
+            return products.OrderBy(p => p.Description).ToList();
+        }
+
         public static List<Product> GetProducts(int companyId)
         {
-            var product = db.Products.Where(c => c.CompanyId == companyId).ToList();
+            var product = db.Products.Where(p => p.CompanyId == companyId).ToList();
             product.Add(new Product
             {
                 ProductId = 0,
@@ -35,9 +41,9 @@ namespace Ecomerce.Clases
             return product.OrderBy(p => p.Description).ToList();
         }
 
-        public static List<City> GetCities()
+        public static List<City> GetCities(int departmentId)
         {
-            var cities = db.Cities.ToList();
+            var cities = db.Cities.Where(c => c.DepartmentId == departmentId ).ToList();
             cities.Add(new City
             {
                 CityId = 0,
@@ -80,7 +86,19 @@ namespace Ecomerce.Clases
 
         public static List<Customer> GetCustomers(int companyId)
         {
-            var customer = db.Customers.Where(c => c.CompanyId == companyId).ToList();
+
+            var qry = (from cu in db.Customers
+                       join cc in db.CompanyCustomers on cu.CustomerId equals cc.CustomerId
+                       join co in db.Companies on cc.CompanyId equals co.CompanyId
+                       where co.CompanyId == companyId
+                       select new { cu }).ToList();
+
+            var customer = new List<Customer>();
+            foreach (var item in qry)
+            {                
+                customer.Add(item.cu);
+            }
+
             customer.Add(new Customer
             {
                 CustomerId = 0,

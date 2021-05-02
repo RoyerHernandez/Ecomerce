@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Ecomerce.Clases;
 using Ecomerce.Models;
+using PagedList;
 
 namespace Ecomerce.Controllers
 {
@@ -17,11 +18,12 @@ namespace Ecomerce.Controllers
         private EcomerceContext db = new EcomerceContext();
 
         // GET: WareHouses
-        public ActionResult Index()
+        public ActionResult Index(int? page = null)
         {
+            page = (page ?? 1);
             var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var wareHouses = db.WareHouses.Where(w => w.CompanyId == user.CompanyId).Include(w => w.City).Include(w => w.Department);
-            return View(wareHouses.ToList());
+            return View(wareHouses.OrderBy(w => w.Department.Name).ThenBy(w => w.City.Name).ThenBy(w => w.WareHouseName).ToPagedList((int)page, 5));
         }
 
         // GET: WareHouses/Details/5
@@ -42,7 +44,7 @@ namespace Ecomerce.Controllers
         // GET: WareHouses/Create
         public ActionResult Create()
         {
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name");
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(0), "CityId", "Name");
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name");
             var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var wareHouse = new WareHouse { CompanyId = user.CompanyId, };
@@ -79,7 +81,7 @@ namespace Ecomerce.Controllers
                 }
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", wareHouse.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(wareHouse.DepartmentId), "CityId", "Name", wareHouse.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", wareHouse.DepartmentId);
             return View(wareHouse);
         }
@@ -97,7 +99,7 @@ namespace Ecomerce.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", wareHouse.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(wareHouse.DepartmentId), "CityId", "Name", wareHouse.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", wareHouse.DepartmentId);
             return View(wareHouse);
         }
@@ -132,7 +134,7 @@ namespace Ecomerce.Controllers
                 }
             }
 
-            ViewBag.CityId = new SelectList(CombosHelper.GetCities(), "CityId", "Name", wareHouse.CityId);
+            ViewBag.CityId = new SelectList(CombosHelper.GetCities(wareHouse.DepartmentId), "CityId", "Name", wareHouse.CityId);
             ViewBag.DepartmentId = new SelectList(CombosHelper.GetDeparments(), "DepartmentId", "Name", wareHouse.DepartmentId);
             return View(wareHouse);
         }

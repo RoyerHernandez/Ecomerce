@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Ecomerce.Clases;
 using Ecomerce.Models;
+using PagedList;
 
 namespace Ecomerce.Controllers
 {
@@ -17,10 +18,11 @@ namespace Ecomerce.Controllers
         private EcomerceContext db = new EcomerceContext();
 
         // GET: Cities
-        public ActionResult Index()
+        public ActionResult Index(int? page = null)
         {
-            var cities = db.Cities.Include(c => c.Department);
-            return View(cities.ToList());
+            page = (page ?? 1);
+            var cities = db.Cities.Include(c => c.Department).OrderBy(c => c.Department.Name).ThenBy(c => c.Name);
+            return View(cities.ToPagedList((int)page, 5));
         }
 
         // GET: Cities/Details/5

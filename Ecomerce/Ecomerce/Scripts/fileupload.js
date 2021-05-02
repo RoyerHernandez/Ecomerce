@@ -14,7 +14,7 @@ function handleFileSelect(e) {
             $("#NombreArchivo").append("<span class='glyphicon glyphicon-file kv-caption-icon' style='display:inline-block'></span>" + f.name);
         }
         else {
-            alert(f.name + ' no esta permitido cargarlo');
+            alert(f.name + ' This file is not allowed to load');
             return;
         }
     });

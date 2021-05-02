@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Ecomerce.Models;
+using PagedList;
 
 namespace Ecomerce.Controllers
 {
@@ -16,15 +17,16 @@ namespace Ecomerce.Controllers
         private EcomerceContext db = new EcomerceContext();        
 
         // GET: Categories
-        public ActionResult Index()
+        public ActionResult Index(int? page = null)
         {
+            page = (page ?? 1);
             var user = db.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             if (user == null)
             {
                 return View("Index", "Home");
             }
             var categories = db.Categories.Where(c => c.CompanyId == user.CompanyId);
-            return View(categories.ToList());
+            return View(categories.OrderBy(c => c.Description).ToPagedList((int)page, 5));
         }
 
         // GET: Categories/Details/5
