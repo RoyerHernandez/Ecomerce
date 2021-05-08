@@ -39,11 +39,7 @@ namespace Ecomerce.Models
         [Range(1, Double.MaxValue, ErrorMessage = "You must select a {0}")]
         [Required(ErrorMessage = "The field is required")]
         [Display(Name = "Tax")]
-        public int TaxId { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)]
-        [Display(Name = "Stock")]        
-        public double Stock { get; set; } 
+        public int TaxId { get; set; }        
 
         [Required(ErrorMessage = "The field is required")]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
@@ -67,6 +63,10 @@ namespace Ecomerce.Models
         public virtual Tax Tax { get; set; }
 
         public virtual ICollection<Inventory> Inventories { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = false)]
+        [Display(Name = "Stock")]
+        public double Stock { get { return Inventories == null ? 0 : Inventories.Sum(i => i.Stock ); } }       
 
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
 
