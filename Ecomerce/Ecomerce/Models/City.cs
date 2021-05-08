@@ -34,5 +34,7 @@ namespace Ecomerce.Models
 
         public virtual Deparment Department { get; set; }
 
+        public virtual ICollection<Supplier> Suppliers { get; set; }
+
     }
 }

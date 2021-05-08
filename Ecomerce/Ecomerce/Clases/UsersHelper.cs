@@ -46,11 +46,19 @@ namespace Ecomerce.Clases
     {
         var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(userContext));
 
-        // Check to see if Role Exists, if not create it
-        if (!roleManager.RoleExists(roleName))
-        {
-            roleManager.Create(new IdentityRole(roleName));
-        }
+            // Check to see if Role Exists, if not create it
+
+            try
+            {
+                if (!roleManager.RoleExists(roleName))
+                {
+                    roleManager.Create(new IdentityRole(roleName));
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
     }
 
     public static void CheckSuperUser()

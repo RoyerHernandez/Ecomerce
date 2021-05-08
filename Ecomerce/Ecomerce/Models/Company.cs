@@ -59,5 +59,7 @@ namespace Ecomerce.Models
 
         public virtual ICollection<CompanyCustomer> CompanyCustomers { get; set; }
 
+        public virtual ICollection<Supplier> Suppliers { get; set; }
+
     }
 }
