@@ -47,6 +47,12 @@ namespace Ecomerce.Models
         [Display(Name = "City")]
         public int CityId { get; set; }
 
+        [Required(ErrorMessage = "The field {0} is required")]
+        [MaxLength(256, ErrorMessage = "The filed {0} must be maximun {1} characters length")]
+        [Display(Name = "E-Mail")]
+        [DataType(DataType.EmailAddress)]
+        public string EMail { get; set; }
+
         [Display(Name = "Customer")]
         public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
 
@@ -54,6 +60,5 @@ namespace Ecomerce.Models
 
         public virtual City City { get; set; }
 
-        public virtual Company Company { get; set; }
     }
 }

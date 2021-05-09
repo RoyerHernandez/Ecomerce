@@ -58,6 +58,7 @@ namespace Ecomerce.Controllers
             if (ModelState.IsValid)
             {
                 db.Suppliers.Add(supplier);
+                UsersHelper.CreateUserASP(supplier.EMail, "Supplier", supplier.EMail);
                 var response = DbHelper.SaveChanges(db);
 
                 if (!response.Succeeded)
