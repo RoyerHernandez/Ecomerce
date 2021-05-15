@@ -50,5 +50,7 @@ namespace Ecomerce.Models
         public DbSet <Ecomerce.Models.CompanyCustomer> CompanyCustomers { get; set; }
 
         public System.Data.Entity.DbSet<Ecomerce.Models.Supplier> Suppliers { get; set; }
+
+        public System.Data.Entity.DbSet<Ecomerce.Models.Purchase> Purchases { get; set; }
     }
 }

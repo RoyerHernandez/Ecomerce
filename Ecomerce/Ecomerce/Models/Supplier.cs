@@ -60,5 +60,7 @@ namespace Ecomerce.Models
 
         public virtual City City { get; set; }
 
+        public virtual ICollection<Purchase> Purchases { get; set; }
+
     }
 }
